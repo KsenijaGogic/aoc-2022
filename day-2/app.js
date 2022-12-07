@@ -174,5 +174,5 @@ async function solutionPt2() {
   console.log(score)
 }
 
-// solutionPt1()
+solutionPt1()
 solutionPt2()
