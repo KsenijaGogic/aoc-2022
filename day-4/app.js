@@ -34,7 +34,6 @@ async function solutionPt1() {
   let completeOverlapOccurrences = 0
 
   for await (const line of lineReader) {
-    console.log(line)
     const tuples = toTuples(line)
     const hasOverlap = compareTuplesForCompleteOverlap(tuples)
 
@@ -53,8 +52,6 @@ async function solutionPt2() {
   for await (const line of lineReader) {
     const tuples = toTuples(line)
     const hasOverlap = compareTuplesForPartialOverlap(tuples)
-
-    console.log(tuples, hasOverlap)
 
     if (hasOverlap) {
       partialOverlapOccurrences = partialOverlapOccurrences + 1
