@@ -24,7 +24,21 @@ function findDirectoryName(line) {
 }
 
 function findFileNameAndSize(line) {
-  return line.split('')
+  return line.split(' ')
+}
+
+function findDirName(line) {
+  return line.split(' ')[1]
+}
+
+function findTempDir(fileSystem, currentPath) {
+  let tempFileSystem = fileSystem
+
+  currentPath.forEach((dir) => {
+    tempFileSystem = tempFileSystem[`${dir}`]
+  })
+
+  return tempFileSystem
 }
 
 function buildFileSystem(line, fileSystem, currentPath) {
@@ -32,38 +46,34 @@ function buildFileSystem(line, fileSystem, currentPath) {
 
   switch (lineType) {
     case 'LIST':
-      // console.log('list')
       // Noop
       break
     case 'ENTER_DIR':
-      // console.log('enter dir')
       // Enter directory: Array.push() value to currentPath
       const directoryName = findDirectoryName(line)
       currentPath.push(directoryName)
       break
     case 'EXIT_DIR':
-      // console.log('exit dir')
-
       // Exit directory: Array.pop() value to currentPath
       currentPath.pop()
       break
     case 'ROOT_DIR':
-      // console.log('root dir')
-
       // Establish we're at the top
       currentPath = []
       break
     case 'FILE':
-      // const tempFileSystem = 
-      // console.log('file')
-
       // Use currentPath to determine where to insert file in fileSystem { [fileName]: size }
-      fileSystem
+      const [size, fileName] = findFileNameAndSize(line)
+      const insertionDir = findTempDir(fileSystem, currentPath)
+
+      insertionDir[fileName] = parseInt(size, 10)
       break
     case 'DIR':
-      // console.log('dir')
-
       // Use currentPath to determine where to Init key in fileSystem { [dirName]: {} }
+      const dirName = findDirName(line)
+      const initializationDir = findTempDir(fileSystem, currentPath)
+
+      initializationDir[dirName] = {}
       break
   }
 }
@@ -76,6 +86,8 @@ async function solution() {
   for await (const line of lineReader) {
     buildFileSystem(line, fileSystem, currentPath)
   }
+
+  console.log(fileSystem)
 }
 
 solution()
