@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 const { readFileLineByLine } = require('../utils.js')
 
+const MAX_SIZE = 100_000
+
 const REGEX_LS = /[$]\s(ls)/
 const REGEX_CD_IN = /[$]\s(cd)\s[a-z]/
 const REGEX_CD_OUT = /[$]\s(cd)\s(..)/
@@ -35,7 +37,7 @@ function findTempDir(fileSystem, currentPath) {
   let tempFileSystem = fileSystem
 
   currentPath.forEach((dir) => {
-    tempFileSystem = tempFileSystem[`${dir}`]
+    tempFileSystem = tempFileSystem[dir]
   })
 
   return tempFileSystem
@@ -78,6 +80,35 @@ function buildFileSystem(line, fileSystem, currentPath) {
   }
 }
 
+function trackDirectorySize(currentDirectory) {
+  const currentSizes = []
+
+  console.log(currentDirectory)
+
+  Object.keys(currentDirectory).forEach(key => {
+    if (typeof currentDirectory[key] === 'object') {
+      // recursion
+      trackDirectorySize(currentDirectory[key])
+    } else {
+      currentSizes.push(currentDirectory[key])
+    }
+  })
+
+  return currentSizes
+}
+
+function trackSize(fileSystem, maxSize) {
+  const sizes = []
+  // console.log(fileSystem, maxSize)
+  // Go as deep as possible. If can't go deeper, sum. Then, work back up, keep summing. Filter out sizes > MAX_SIZE.
+
+  Object.keys(fileSystem).forEach(key => {
+    const currentDirectory = fileSystem[key]
+    const result = trackDirectorySize(currentDirectory)
+    console.log(result)
+  })
+}
+
 async function solution() {
   const lineReader = await readFileLineByLine('./input.txt')
   const fileSystem = {}
@@ -87,7 +118,7 @@ async function solution() {
     buildFileSystem(line, fileSystem, currentPath)
   }
 
-  console.log(fileSystem)
+  trackSize(fileSystem, MAX_SIZE)
 }
 
 solution()

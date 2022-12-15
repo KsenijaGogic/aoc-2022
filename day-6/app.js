@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { readFile, readFileLineByLine } = require('../utils.js')
+const { readFile } = require('../utils.js')
 
 const START_OF_PACKET = 4
 const START_OF_MESSAGE = 14
